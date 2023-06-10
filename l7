@@ -1,0 +1,98 @@
+import time
+import random
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as anim
+
+
+# Task 1
+def array(n):
+    a = []
+    for i in range(n):
+        x = random.randint(1, 100)
+        a.append(x)
+    return a
+
+def hands(n):
+    a = array(n)
+    b = array(n)
+    c = []
+    start = time.perf_counter()
+    for i in range(n):
+        c.append(a[i]*b[i])
+    all_time = time.perf_counter()-start
+    return all_time
+
+def numpy(n):
+    a = array(n)
+    b = array(n)
+    start = time.perf_counter()
+    np.multiply(a, b)
+    all_time = time.perf_counter()-start
+    return all_time
+print(f"{numpy(1000000)} время умножения с помощью NumPy")
+print(f"{hands(1000000)} время умножения поэлементно")
+
+
+# Task 2
+fig = plt.figure()
+
+plt.xlabel('Время')
+plt.ylabel(f'Положение дроссельной заслонки (%)\nУгол опережения зажигания (°ПКВ)')
+plt.title('Зависимость Положение дроссельной заслонки (%)\nУгол опережения зажигания (°ПКВ) от Время')
+
+drossel = []
+time = []
+ygol = []
+
+with open('data1.csv', 'r') as f:
+    for line in f:
+        res = line.split(';')
+        time.append(res[0])
+        ygol.append(res[3])
+        drossel.append(res[10])
+    f.close()
+
+for arr in (time, ygol, drossel):
+    arr.pop(0)
+
+writer = anim.PillowWriter(fps=15)
+
+with writer.saving(fig, "graph1.gif", 100):
+    for idx in range(len(time)):
+        if idx % 3000 == 0 or idx == len(time)-1:
+            print(idx)
+            plt.plot(time[0:idx], drossel[0:idx], color='red')
+            plt.plot(time[0:idx], ygol[0:idx], color='blue')
+
+            writer.grab_frame()
+    writer.finish()
+
+
+plt.close(fig)
+plt.title('График корреляции')
+plt.xlabel('Положение дроссельной заслонки (%)')
+plt.ylabel('Угол опережения зажигания (°ПКВ)')
+plt.plot(drossel, ygol , 'o')
+plt.show()
+# Task 3
+x = np.linspace(-10, 10, 100)
+y = np.linspace(-0.5, 0.5, 100)
+z = np.tan(x+y)
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.plot(x, y, z, label = 'Task 3')
+plt.show()
+# Task *
+fig = plt.figure()
+ListX = []
+ListY = []
+with writer.saving(fig, "sin.gif", 100):
+    for idx in range(100):
+        print(idx)
+        ListX.append(idx)
+        ListY.append(np.sin(idx))
+        plt.plot(ListX, ListY, color='red')
+
+        writer.grab_frame()
+    writer.finish()
